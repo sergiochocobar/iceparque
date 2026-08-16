@@ -1,0 +1,31 @@
+---
+import { site } from '../data/site';
+interface Props { tone?: 'light' | 'dark'; }
+const { tone = 'light' } = Astro.props;
+---
+
+<header class:list={['header', tone]}>
+	<div class="container nav-wrap">
+		<a class="wordmark" href="/inicio" aria-label="ICE Parque, inicio">ICE<span>PARQUE</span></a>
+		<nav aria-label="Navegación principal">
+			<a href="/inicio#nosotros">Nosotros</a>
+			<a href="/inicio#agenda">Agenda</a>
+			<a href="/inicio#comunidad">Comunidad</a>
+			<a href="/inicio#ubicacion">Ubicación</a>
+		</nav>
+		<a class="nav-cta" href={site.links.whatsapp} target="_blank" rel="noreferrer">Escribinos</a>
+	</div>
+</header>
+
+<style>
+	.header { position: absolute; z-index: 5; width: 100%; color: var(--cream); }
+	.header.dark { color: var(--ink); }
+	.nav-wrap { align-items: center; display: flex; height: 5.5rem; justify-content: space-between; }
+	.wordmark { font-family: var(--font-display); font-size: 1.25rem; font-weight: 800; letter-spacing: -.07em; }
+	.wordmark span { color: var(--coral); margin-left: .12rem; }
+	nav { display: flex; gap: 1.7rem; font-size: .88rem; }
+	nav a { opacity: .88; } nav a:hover { opacity: 1; }
+	.nav-cta { background: var(--coral); border: 1px solid var(--coral); border-radius: 40px; color: var(--cream); font-size: .74rem; font-weight: 600; letter-spacing: .05em; padding: .65rem 1rem; text-transform: uppercase; transition: background .2s, color .2s; }
+	.nav-cta:hover { background: transparent; color: var(--cream); }.header.dark .nav-cta:hover { color: var(--coral-dark); }
+	@media (max-width: 720px) { nav { display: none; } .nav-cta { font-size: .78rem; } }
+</style>
