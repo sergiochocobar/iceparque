@@ -3,13 +3,14 @@ import { formatEventDate, type Event } from '../data/site';
 import QuickIcon from './QuickIcon.astro';
 interface Props { event: Event; variant?: 'compact' | 'full'; }
 const { event, variant = 'compact' } = Astro.props;
+const eventPlace = event.mode === 'online' ? event.location ? `Reunión online por ${event.location}` : 'Reunión online' : event.location;
 ---
 
 <article class:list={['event-card', variant]}>
 	<div class="event-date">{formatEventDate(event.start, variant === 'full')}</div>
 	<div class="event-main">
 		<h3>{event.title}</h3>
-		<p class="event-place">{event.mode === 'online' ? <span aria-hidden="true">◌</span> : <QuickIcon name="map" />} {event.mode === 'online' ? 'Online' : event.location}</p>
+		{eventPlace && <p class="event-place">{event.mode === 'online' ? <span aria-hidden="true">◌</span> : <QuickIcon name="map" />} {eventPlace}</p>}
 		{variant === 'full' && event.mode === 'presencial' && <p class="address">Aristóbulo del Valle 2580, Merlo</p>}
 		{variant === 'full' && event.description && <p class="event-description">{event.description}</p>}
 	</div>

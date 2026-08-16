@@ -6,8 +6,9 @@ const serializedEvents = JSON.stringify(events);
 const links = [
 	{ label: 'Calendario', detail: 'Próximos eventos', icon: 'calendar', href: '/calendario', internal: true },
 	{ label: 'Cómo llegar', detail: 'Abrir Google Maps', icon: 'map', href: site.links.maps },
+	{ label: 'Instagram', detail: 'Seguinos', icon: 'instagram', href: site.links.instagram },
 	{ label: 'Facebook', detail: 'Seguinos', icon: 'facebook', href: site.links.facebook },
-	{ label: 'YouTube', detail: 'Mirá nuestros videos', icon: 'youtube', href: site.links.youtube },
+	{ label: 'YouTube', detail: 'Mirá nuestros videos y transmisiones en vivo', icon: 'youtube', href: site.links.youtube },
 ];
 ---
 
@@ -17,6 +18,11 @@ const links = [
 		<a class="quick-brand" href="/" aria-label="ICE Parque">ICE<span>PARQUE</span></a>
 		<p class="quick-tagline">{site.tagline}</p>
 		<img class="community-profile" src="/images/community-profile.png" alt="Personas de la comunidad de ICE Parque" />
+		<div class="now-events" data-now-events hidden>
+			<p class="quick-label">Ahora</p>
+			<div class="now-events-list" data-now-events-list></div>
+		</div>
+		<template data-event-card-template><EventCard event={events[0]} /></template>
 		<div class="next-event" data-next-event>
 			<p class="quick-label">Próximo encuentro</p>
 			<EventCard event={events[0]} />
@@ -40,18 +46,35 @@ const links = [
 	const calendarEvents = JSON.parse(serializedEvents);
 	const mapIcon = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block;width:.9rem;height:.9rem;vertical-align:-.18rem"><path d="M20 10.4c0 5.2-8 10.8-8 10.8S4 15.6 4 10.4a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10.4" r="2.7"/></svg>';
 	const dateFormatter = new Intl.DateTimeFormat('es-AR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', hour12: false });
-	const card = document.querySelector('[data-next-event]');
-	const refreshNextEvent = () => {
-		const next = calendarEvents.find((event) => new Date(event.start) > new Date());
-		if (!next) { card.hidden = true; return; }
-		card.hidden = false;
-		card.querySelector('.event-date').textContent = dateFormatter.format(new Date(next.start)).replace(',', ' ·').toUpperCase();
-		card.querySelector('h3').textContent = next.title;
-		const place = card.querySelector('.event-place');
-		place.innerHTML = next.mode === 'online' ? '◌ Online' : `${mapIcon} ${next.location}`;
+	const timeFormatter = new Intl.DateTimeFormat('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false });
+	const nowEvents = document.querySelector('[data-now-events]');
+	const nowEventsList = document.querySelector('[data-now-events-list]');
+	const eventCardTemplate = document.querySelector('[data-event-card-template]');
+	const nextCard = document.querySelector('[data-next-event]');
+	const updateEventCard = (eventCard, event, isActive = false) => {
+		eventCard.querySelector('.event-date').textContent = isActive ? `EN CURSO · HASTA ${timeFormatter.format(new Date(event.end))} HS` : `${dateFormatter.format(new Date(event.start)).replace(',', ' ·').toUpperCase()} HS`;
+		eventCard.querySelector('h3').textContent = event.title;
+		const place = eventCard.querySelector('.event-place');
+		const onlineLabel = event.location ? `Reunión online por ${event.location}` : 'Reunión online';
+		const placeMarkup = event.mode === 'online' ? `◌ ${onlineLabel}` : event.location ? `${mapIcon} ${event.location}` : '';
+		if (place) { place.hidden = !placeMarkup; place.innerHTML = placeMarkup; }
 	};
-	refreshNextEvent();
-	setInterval(refreshNextEvent, 60_000);
+	const refreshEvents = () => {
+		const now = new Date();
+		const activeEvents = calendarEvents.filter((event) => new Date(event.start) <= now && now < new Date(event.end));
+		nowEvents.hidden = activeEvents.length === 0;
+		nowEventsList.replaceChildren(...activeEvents.map((event) => {
+			const eventCard = eventCardTemplate.content.firstElementChild.cloneNode(true);
+			updateEventCard(eventCard, event, true);
+			return eventCard;
+		}));
+		const next = calendarEvents.find((event) => new Date(event.start) > now);
+		if (!next) { nextCard.hidden = true; return; }
+		nextCard.hidden = false;
+		updateEventCard(nextCard.querySelector('.event-card'), next);
+	};
+	refreshEvents();
+	setInterval(refreshEvents, 60_000);
 </script>
 
 <style>
@@ -61,7 +84,7 @@ const links = [
 	.quick-brand { display: inline-block; font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; letter-spacing: -.08em; margin-top: .5rem; }.quick-brand span { color: var(--cream); margin-left: .13em; }
 	.quick-tagline { color: rgba(255,255,255,.75); font-size: .9rem; margin: .2rem 0 1.35rem; }.community-profile { border: 4px solid rgba(255,255,255,.83); border-radius: 50%; box-shadow: 0 12px 26px rgba(5,25,16,.24); display: block; height: 7.25rem; margin: 0 auto 2.4rem; object-fit: cover; width: 7.25rem; }
 	.quick-label { color: var(--coral-light); font-size: .72rem; font-weight: 800; letter-spacing: .12em; margin-bottom: .6rem; text-transform: uppercase; }
-	.next-event :global(.event-card) { background: rgba(255,255,255,.97); }
+	.now-events :global(.event-card), .next-event :global(.event-card) { background: rgba(255,255,255,.97); }.now-events-list { display: grid; gap: 1.35rem; }.now-events + .next-event { margin-top: 1.65rem; }
 	h1 { font-family: var(--font-display); font-size: clamp(1.7rem, 6vw, 2.25rem); letter-spacing: -.055em; line-height: 1; margin: 2.8rem 0 1.25rem; }
 	.quick-links { display: grid; gap: .7rem; text-align: left; }.quick-links a { align-items: center; background: rgba(255,255,255,.97); border: 1px solid rgba(255,255,255,.9); border-radius: .9rem; color: var(--ink); display: flex; gap: .85rem; min-height: 4.55rem; padding: .6rem .8rem; transition: box-shadow .2s, transform .2s; }.quick-links a:hover { box-shadow: 0 10px 24px rgba(5,25,16,.2); transform: translateY(-2px); }
 	.quick-icon { align-items: center; background: var(--sand); border-radius: .65rem; color: var(--coral-dark); display: flex; height: 2.65rem; justify-content: center; width: 2.65rem; }.quick-icon :global(svg) { height: 1.35rem; width: 1.35rem; }

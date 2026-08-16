@@ -1,9 +1,10 @@
 export type Event = {
 	title: string;
 	start: string;
+	end: string;
 	category: 'Jóvenes' | 'Oración' | 'Comunidad' | 'Especial';
-	mode: 'presencial' | 'online';
-	location: string;
+	mode?: 'presencial' | 'online';
+	location?: string;
 	description?: string;
 };
 
@@ -12,6 +13,7 @@ export const site = {
 	address: 'Aristóbulo del Valle 2580, Merlo',
 	links: {
 		maps: 'https://maps.app.goo.gl/Rxydv964KB7TH7B16',
+		instagram: 'https://www.instagram.com/iceparque',
 		facebook: 'https://www.facebook.com/iceparque',
 		youtube: 'https://www.youtube.com/iceparque',
 		whatsapp: 'https://example.com/iceparque-whatsapp',
@@ -19,35 +21,58 @@ export const site = {
 };
 
 // Instantánea normalizada del calendario "ICE Parque - Reuniones" hasta fin de 2026.
-// Consultada el 15 de agosto de 2026; se reemplazará por la API en la siguiente fase.
+// Consultada el 16 de agosto de 2026; se reemplazará por la API en la siguiente fase.
 const sundays = ['2026-08-16', '2026-08-23', '2026-08-30', '2026-09-06', '2026-09-13', '2026-09-20', '2026-09-27', '2026-10-04', '2026-10-11', '2026-10-18', '2026-10-25', '2026-11-01', '2026-11-08', '2026-11-15', '2026-11-22', '2026-11-29', '2026-12-06', '2026-12-13', '2026-12-20', '2026-12-27'];
 const thursdays = ['2026-08-20', '2026-08-27', '2026-09-03', '2026-09-10', '2026-09-17', '2026-09-24', '2026-10-01', '2026-10-08', '2026-10-15', '2026-10-22', '2026-10-29', '2026-11-05', '2026-11-12', '2026-11-19', '2026-11-26', '2026-12-03', '2026-12-10', '2026-12-17', '2026-12-24', '2026-12-31'];
 const presencialPrayerDays = new Set(['2026-09-03', '2026-10-01', '2026-11-05', '2026-12-03']);
+const zoomPrayerDays = new Set(['2026-08-20', '2026-09-17', '2026-10-15', '2026-11-19', '2026-12-17']);
 
 const sundayEvents: Event[] = sundays.flatMap((day) => [
-	{ title: 'Santa Cena', start: `${day}T09:00:00-03:00`, category: 'Comunidad', mode: 'presencial', location: 'ICE Parque' },
-	{ title: 'Reunión General', start: `${day}T10:15:00-03:00`, category: 'Comunidad', mode: 'presencial', location: 'ICE Parque' },
-	{ title: 'Escuelita Dominical', start: `${day}T11:15:00-03:00`, category: 'Comunidad', mode: 'presencial', location: 'ICE Parque' },
+	{ title: 'Santa Cena', start: `${day}T09:00:00-03:00`, end: `${day}T10:00:00-03:00`, category: 'Comunidad', mode: 'presencial', location: 'ICE Parque' },
+	{ title: 'Reunión General', start: `${day}T10:15:00-03:00`, end: `${day}T11:00:00-03:00`, category: 'Comunidad', mode: 'presencial', location: 'ICE Parque' },
+	{ title: 'Escuelita Dominical', start: `${day}T11:15:00-03:00`, end: `${day}T12:45:00-03:00`, category: 'Comunidad', mode: 'presencial', location: 'ICE Parque' },
 ]);
 
 const prayerEvents: Event[] = thursdays.map((day) => {
 	const presencial = presencialPrayerDays.has(day);
+	const zoom = zoomPrayerDays.has(day);
+	const platform = zoom ? 'Zoom' : 'Google Meet';
 	return {
-		title: presencial ? 'Reunión de Oración y Enseñanza — Presencial' : 'Reunión de Oración y Enseñanza',
-		start: `${day}T20:00:00-03:00`, category: 'Oración', mode: presencial ? 'presencial' : 'online', location: presencial ? 'ICE Parque' : 'Online',
-		description: presencial ? 'Primer jueves del mes, presencial en la iglesia.' : 'Reunión por Zoom. Pedí el link en los grupos de WhatsApp de la iglesia.',
+		title: presencial ? 'Reunión de Oración y Enseñanza — Presencial' : zoom ? 'Reunión de Oración' : 'Reunión de Oración y Enseñanza',
+		start: `${day}T20:00:00-03:00`, end: `${day}T21:00:00-03:00`, category: 'Oración', mode: presencial ? 'presencial' : 'online', location: presencial ? 'ICE Parque' : platform,
+		description: presencial ? 'Primer jueves del mes, presencial en la iglesia.' : `Reunión por ${platform}. Pedí el link en los grupos de WhatsApp de la iglesia.`,
 	};
 });
 
 const outreachEvents: Event[] = ['2026-08-21', '2026-09-04', '2026-09-18', '2026-10-02', '2026-10-16', '2026-11-06', '2026-11-20', '2026-12-04', '2026-12-18'].map((day) => ({
-	title: 'Amor en Acción', start: `${day}T19:00:00-03:00`, category: 'Especial', mode: 'presencial', location: 'Plaza Founder Don Francisco De Merlo',
+	title: 'Amor en Acción', start: `${day}T19:00:00-03:00`, end: `${day}T20:00:00-03:00`, category: 'Especial', mode: 'presencial', location: 'Plaza Founder Don Francisco De Merlo',
 }));
 
+const decoTelaHogarDays = ['2026-08-19', '2026-08-26', '2026-09-02', '2026-09-09', '2026-09-16', '2026-09-23', '2026-09-30', '2026-10-07', '2026-10-14', '2026-10-21', '2026-10-28', '2026-11-04', '2026-11-11', '2026-11-18', '2026-11-25', '2026-12-02', '2026-12-09', '2026-12-16', '2026-12-23', '2026-12-30'];
+const decoTelaHogarEvents: Event[] = decoTelaHogarDays.map((day) => ({
+	title: 'Taller DecoTelaHogar', start: `${day}T14:00:00-03:00`, end: `${day}T17:00:00-03:00`, category: 'Especial', mode: 'presencial', location: 'ICE Parque', description: 'Taller libre y gratuito en nuestra iglesia.',
+}));
+const memoriaEvents: Event[] = decoTelaHogarDays.map((day) => ({
+	title: 'Taller de la Memoria', start: `${day}T15:00:00-03:00`, end: `${day}T16:00:00-03:00`, category: 'Especial', mode: 'presencial', location: 'ICE Parque', description: 'Taller libre y gratuito en nuestra iglesia.',
+}));
+const costuraEvents: Event[] = thursdays.map((day) => ({
+	title: 'Taller de Costura, Marroquinería y Reciclado', start: `${day}T15:00:00-03:00`, end: `${day}T16:00:00-03:00`, category: 'Especial', mode: 'presencial', location: 'ICE Parque', description: 'Taller libre y gratuito en nuestra iglesia.',
+}));
+const activadosTejaditoEvents: Event[] = ['2026-09-05', '2026-10-03', '2026-11-07', '2026-12-05'].map((day) => ({
+	title: 'Activados x Jesús', start: `${day}T15:00:00-03:00`, end: `${day}T17:00:00-03:00`, category: 'Especial', mode: 'presencial', location: 'El Tejadito — Parque Presidente Néstor Kirchner',
+}));
+const activadosIceEvents: Event[] = ['2026-09-19', '2026-10-17', '2026-11-21', '2026-12-19'].map((day) => ({
+	title: 'Activados x Jesús', start: `${day}T18:00:00-03:00`, end: `${day}T20:00:00-03:00`, category: 'Especial', mode: 'presencial', location: 'ICE Parque',
+}));
+const additionalPrayerEvents: Event[] = [
+	{ title: 'Reunión de Oración y Enseñanza', start: '2026-11-26T20:00:00-03:00', end: '2026-11-26T21:00:00-03:00', category: 'Oración', mode: 'online', location: 'Zoom', description: 'Reunión por Zoom. Pedir link en los grupos de WhatsApp de la iglesia.' },
+];
+
 export const events: Event[] = [
-	{ title: 'Activados x Jesús', start: '2026-08-15T15:00:00-03:00', category: 'Especial', mode: 'presencial', location: 'Parque Presidente Néstor Kirchner' },
-	{ title: 'Jóvenes Fuera de Serie', start: '2026-08-22T18:00:00-03:00', category: 'Jóvenes', mode: 'presencial', location: 'ICE Parque', description: 'Nos visitan jóvenes de Morón, Húsares, Villa Celina y Villa Urquiza.' },
-	{ title: 'Taller de Evangelismo', start: '2026-08-29T09:00:00-03:00', category: 'Especial', mode: 'presencial', location: 'ICE Parque', description: 'Capacitación y herramientas para compartir el evangelio.' },
-	...sundayEvents, ...prayerEvents, ...outreachEvents,
+	{ title: 'Activados x Jesús', start: '2026-08-15T15:00:00-03:00', end: '2026-08-15T17:00:00-03:00', category: 'Especial', mode: 'presencial', location: 'Parque Presidente Néstor Kirchner' },
+	{ title: 'Jóvenes Fuera de Serie', start: '2026-08-22T18:00:00-03:00', end: '2026-08-22T21:00:00-03:00', category: 'Jóvenes', mode: 'presencial', location: 'ICE Parque', description: 'Nos visitan jóvenes de Morón, Húsares, Villa Celina y Villa Urquiza.' },
+	{ title: 'Taller de Evangelismo', start: '2026-08-29T09:00:00-03:00', end: '2026-08-29T12:30:00-03:00', category: 'Especial', mode: 'presencial', location: 'ICE Parque', description: 'A cargo de Martín Rebai y hermanos. Traer mate para el break.' },
+	...sundayEvents, ...prayerEvents, ...outreachEvents, ...decoTelaHogarEvents, ...memoriaEvents, ...costuraEvents, ...activadosTejaditoEvents, ...activadosIceEvents, ...additionalPrayerEvents,
 ].sort((first, second) => new Date(first.start).getTime() - new Date(second.start).getTime());
 
 // La agenda mensual prioriza actividades especiales; los horarios fijos se muestran aparte.
@@ -56,4 +81,4 @@ export const specialEvents = events.filter((event) => event.category !== 'Comuni
 export const formatEventDate = (value: string, compact = false) => new Intl.DateTimeFormat('es-AR', {
 	weekday: compact ? 'short' : 'long', day: 'numeric', month: compact ? 'short' : 'long',
 	hour: '2-digit', minute: '2-digit', hour12: false,
-}).format(new Date(value)).replace(',', ' ·').replace(/\.$/, '').toUpperCase();
+}).format(new Date(value)).replace(',', ' ·').replace(/\.$/, '').toUpperCase() + ' HS';

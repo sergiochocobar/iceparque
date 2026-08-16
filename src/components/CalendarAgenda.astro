@@ -26,7 +26,7 @@ const serializedEvents = JSON.stringify(specialEvents);
 	const panel = document.querySelector('[data-panel="month"]');
 	const periodLabel = document.querySelector('[data-period]');
 	const mapIcon = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block;width:.9rem;height:.9rem;vertical-align:-.18rem"><path d="M20 10.4c0 5.2-8 10.8-8 10.8S4 15.6 4 10.4a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10.4" r="2.7"/></svg>';
-	const eventMarkup = (event) => `<article class="agenda-event"><div class="agenda-time">${time.format(new Date(event.start))} hs</div><div><h2>${event.title}</h2><p class="agenda-place">${event.mode === 'online' ? '◌ Online' : `${mapIcon} ${event.location}`}</p></div></article>`;
+	const eventMarkup = (event) => { const onlineLabel = event.location ? `Reunión online por ${event.location}` : 'Reunión online'; const place = event.mode === 'online' ? `◌ ${onlineLabel}` : event.location ? `${mapIcon} ${event.location}` : ''; return `<article class="agenda-event"><div class="agenda-time">${time.format(new Date(event.start))} hs</div><div><h2>${event.title}</h2>${place ? `<p class="agenda-place">${place}</p>` : ''}</div></article>`; };
 	const groupByDay = (list) => list.reduce((groups, event) => { const key = dateKey(new Date(event.start)); groups.set(key, [...(groups.get(key) || []), event]); return groups; }, new Map());
 	const render = () => {
 		const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
