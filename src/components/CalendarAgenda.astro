@@ -22,9 +22,12 @@ const serializedEvents = JSON.stringify(specialEvents);
 	const monthDate = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });
 	const time = new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', hour12: false });
 	const capitalize = (value) => value.charAt(0).toUpperCase() + value.slice(1);
-	let selectedDate = fromKey(dateKey(new Date()));
+	const today = fromKey(dateKey(new Date()));
+	const currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+	let selectedDate = new Date(currentMonth);
 	const panel = document.querySelector('[data-panel="month"]');
 	const periodLabel = document.querySelector('[data-period]');
+	const previousButton = document.querySelector('[data-direction="previous"]');
 	const mapIcon = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block;width:.9rem;height:.9rem;vertical-align:-.18rem"><path d="M20 10.4c0 5.2-8 10.8-8 10.8S4 15.6 4 10.4a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10.4" r="2.7"/></svg>';
 	const eventMarkup = (event) => { const onlineLabel = event.location ? `Reunión online por ${event.location}` : 'Reunión online'; const place = event.mode === 'online' ? `◌ ${onlineLabel}` : event.location ? `${mapIcon} ${event.location}` : ''; return `<article class="agenda-event"><div class="agenda-time">${time.format(new Date(event.start))} hs</div><div><h2>${event.title}</h2>${place ? `<p class="agenda-place">${place}</p>` : ''}</div></article>`; };
 	const groupByDay = (list) => list.reduce((groups, event) => { const key = dateKey(new Date(event.start)); groups.set(key, [...(groups.get(key) || []), event]); return groups; }, new Map());
@@ -32,22 +35,25 @@ const serializedEvents = JSON.stringify(specialEvents);
 		const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
 		const end = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
 		end.setHours(23, 59, 59, 999);
-		const visible = calendarEvents.filter((event) => { const date = eventDate(event); return date >= start && date <= end; });
+		const isCurrentMonth = selectedDate.getTime() === currentMonth.getTime();
+		const visible = calendarEvents.filter((event) => { const date = eventDate(event); const hasNotEnded = new Date(event.end || event.start) > new Date(); return date >= start && date <= end && (!isCurrentMonth || hasNotEnded); });
 		periodLabel.textContent = capitalize(monthDate.format(start));
+		previousButton.disabled = isCurrentMonth;
 		const days = groupByDay(visible);
 		const content = visible.length ? [...days].map(([key, dayEvents]) => `<div class="agenda-day"><p class="day-label">${displayDate.format(fromKey(key)).toUpperCase()}</p>${dayEvents.map(eventMarkup).join('')}</div>`).join('') : '<p class="empty-state">No hay actividades programadas para este período.</p>';
 		panel.innerHTML = `<section class="agenda-group">${content}</section>`;
 	};
 	document.querySelectorAll('[data-direction]').forEach((button) => button.addEventListener('click', () => {
 		const direction = button.dataset.direction === 'next' ? 1 : -1;
-		selectedDate.setMonth(selectedDate.getMonth() + direction);
+		if (direction < 0 && selectedDate.getTime() === currentMonth.getTime()) return;
+		selectedDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + direction, 1);
 		render();
 	}));
 	render();
 </script>
 
 <style is:global>
-	.period-control { align-items: center; display: grid; gap: .8rem; grid-template-columns: 2.4rem 1fr 2.4rem; margin: 2rem 0 1.2rem; text-align: center; }.period-control p { color: var(--cream); font-size: .92rem; font-weight: 700; margin: 0; }.period-button { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.5); border-radius: 50%; color: var(--cream); cursor: pointer; font-size: 1.1rem; height: 2.4rem; width: 2.4rem; }
+	.period-control { align-items: center; display: grid; gap: .8rem; grid-template-columns: 2.4rem 1fr 2.4rem; margin: 2rem 0 1.2rem; text-align: center; }.period-control p { color: var(--cream); font-size: .92rem; font-weight: 700; margin: 0; }.period-button { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.5); border-radius: 50%; color: var(--cream); cursor: pointer; font-size: 1.1rem; height: 2.4rem; width: 2.4rem; }.period-button:disabled { cursor: not-allowed; opacity: .35; }
 	.agenda-group { border: 1px solid var(--line); border-radius: 1.15rem; padding: .85rem; }.agenda-day + .agenda-day { border-top: 1px dashed var(--line); margin-top: 1.35rem; padding-top: 1.35rem; }.day-label { color: var(--coral-dark); font-size: .67rem; font-weight: 700; letter-spacing: .07em; margin: 0 0 .55rem; }.agenda-event { background: var(--cream); border: 1px solid var(--line); border-radius: .85rem; display: grid; gap: .8rem; grid-template-columns: 4.15rem 1fr; padding: .9rem; }.agenda-day .agenda-event + .agenda-event { margin-top: .75rem; }.agenda-time { color: var(--coral-dark); font-size: .72rem; font-weight: 800; padding-top: .2rem; }.agenda-event h2 { color: var(--ink); font-family: var(--font-display); font-size: .92rem; letter-spacing: -.035em; line-height: 1.35; margin: 0; }.agenda-place { color: var(--ink-muted); font-size: .74rem; margin: .4rem 0 0; }.agenda-place svg { color: var(--coral-dark); height: .9rem; margin-right: .18rem; vertical-align: -.18rem; width: .9rem; }.empty-state { color: var(--cream); font-size: .88rem; margin: .5rem; text-align: center; }
 	.calendar-page .agenda-group { border-color: rgba(255,255,255,.45); }.calendar-page .agenda-day + .agenda-day { border-top-color: rgba(255,255,255,.45); }.calendar-page .day-label { color: rgba(255,255,255,.88); }.calendar-page .agenda-event { background: rgba(255,255,255,.97); border-color: rgba(255,255,255,.9); }
 </style>
