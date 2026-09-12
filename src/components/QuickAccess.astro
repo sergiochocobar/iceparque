@@ -27,6 +27,10 @@ const links = [
 			<p class="quick-label">Próximo encuentro</p>
 			<EventCard event={events[0]} showMeetingDetails />
 		</div>
+		<div class="next-workshop" data-next-workshop>
+			<p class="quick-label" data-workshop-label>Próximo taller</p>
+			<EventCard event={events[0]} />
+		</div>
 		<h1 id="quick-title">Todo lo que necesitás, en un lugar.</h1>
 		<nav class="quick-links" aria-label="Accesos rápidos">
 			{links.map((link) => (
@@ -51,6 +55,8 @@ const links = [
 	const nowEventsList = document.querySelector('[data-now-events-list]');
 	const eventCardTemplate = document.querySelector('[data-event-card-template]');
 	const nextCard = document.querySelector('[data-next-event]');
+	const nextWorkshopCard = document.querySelector('[data-next-workshop]');
+	const isWorkshop = (event) => event.title.startsWith('Taller');
 	const updateEventCard = (eventCard, event, isActive = false) => {
 		eventCard.querySelector('.event-date').textContent = isActive ? `EN CURSO · HASTA ${timeFormatter.format(new Date(event.end))} HS` : `${dateFormatter.format(new Date(event.start)).replace(',', ' ·').toUpperCase()} HS`;
 		eventCard.querySelector('h3').textContent = event.title;
@@ -78,17 +84,28 @@ const links = [
 	};
 	const refreshEvents = () => {
 		const now = new Date();
-		const activeEvents = calendarEvents.filter((event) => new Date(event.start) <= now && now < new Date(event.end));
+		const activeEvents = calendarEvents.filter((event) => !isWorkshop(event) && new Date(event.start) <= now && now < new Date(event.end));
 		nowEvents.hidden = activeEvents.length === 0;
 		nowEventsList.replaceChildren(...activeEvents.map((event) => {
 			const eventCard = eventCardTemplate.content.firstElementChild.cloneNode(true);
 			updateEventCard(eventCard, event, true);
 			return eventCard;
 		}));
-		const next = calendarEvents.find((event) => new Date(event.start) > now);
-		if (!next) { nextCard.hidden = true; return; }
-		nextCard.hidden = false;
-		updateEventCard(nextCard.querySelector('.event-card'), next);
+		const next = calendarEvents.find((event) => !isWorkshop(event) && new Date(event.start) > now);
+		if (!next) nextCard.hidden = true;
+		else {
+			nextCard.hidden = false;
+			updateEventCard(nextCard.querySelector('.event-card'), next);
+		}
+		const activeWorkshop = calendarEvents.find((event) => isWorkshop(event) && new Date(event.start) <= now && now < new Date(event.end));
+		const nextWorkshop = calendarEvents.find((event) => isWorkshop(event) && new Date(event.start) > now);
+		const workshop = activeWorkshop ?? nextWorkshop;
+		if (!workshop) nextWorkshopCard.hidden = true;
+		else {
+			nextWorkshopCard.hidden = false;
+			nextWorkshopCard.querySelector('[data-workshop-label]').textContent = activeWorkshop ? 'Taller en curso' : 'Próximo taller';
+			updateEventCard(nextWorkshopCard.querySelector('.event-card'), workshop, Boolean(activeWorkshop));
+		}
 	};
 	refreshEvents();
 	setInterval(refreshEvents, 60_000);
@@ -101,7 +118,7 @@ const links = [
 	.quick-brand { display: inline-block; font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; letter-spacing: -.08em; margin-top: .5rem; }.quick-brand span { color: var(--cream); margin-left: .13em; }
 	.quick-tagline { color: rgba(255,255,255,.75); font-size: .9rem; margin: .2rem 0 1.35rem; }.community-profile { border: 4px solid rgba(255,255,255,.83); border-radius: 50%; box-shadow: 0 12px 26px rgba(5,25,16,.24); display: block; height: 7.25rem; margin: 0 auto 2.4rem; object-fit: cover; width: 7.25rem; }
 	.quick-label { color: var(--coral-light); font-size: .72rem; font-weight: 800; letter-spacing: .12em; margin-bottom: .6rem; text-transform: uppercase; }
-	.now-events :global(.event-card), .next-event :global(.event-card) { background: rgba(255,255,255,.97); }.now-events-list { display: grid; gap: 1.35rem; }.now-events + .next-event { margin-top: 1.65rem; }
+	.now-events :global(.event-card), .next-event :global(.event-card), .next-workshop :global(.event-card) { background: rgba(255,255,255,.97); }.now-events-list { display: grid; gap: 1.35rem; }.now-events
 	h1 { font-family: var(--font-display); font-size: clamp(1.7rem, 6vw, 2.25rem); letter-spacing: -.055em; line-height: 1; margin: 2.8rem 0 1.25rem; }
 	.quick-links { display: grid; gap: .7rem; text-align: left; }.quick-links a { align-items: center; background: rgba(255,255,255,.97); border: 1px solid rgba(255,255,255,.9); border-radius: .9rem; color: var(--ink); display: flex; gap: .85rem; min-height: 4.55rem; padding: .6rem .8rem; transition: box-shadow .2s, transform .2s; }.quick-links a:hover { box-shadow: 0 10px 24px rgba(5,25,16,.2); transform: translateY(-2px); }
 	.quick-icon { align-items: center; background: var(--sand); border-radius: .65rem; color: var(--coral-dark); display: flex; height: 2.65rem; justify-content: center; width: 2.65rem; }.quick-icon :global(svg) { height: 1.35rem; width: 1.35rem; }
