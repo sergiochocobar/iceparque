@@ -1,8 +1,8 @@
 ---
 import { formatEventDate, type Event } from '../data/site';
 import QuickIcon from './QuickIcon.astro';
-interface Props { event: Event; variant?: 'compact' | 'full'; }
-const { event, variant = 'compact' } = Astro.props;
+interface Props { event: Event; variant?: 'compact' | 'full'; showMeetingDetails?: boolean; }
+const { event, variant = 'compact', showMeetingDetails = false } = Astro.props;
 const eventPlace = event.mode === 'online' ? event.location ? `Reunión online por ${event.location}` : 'Reunión online' : event.location;
 ---
 
@@ -11,6 +11,10 @@ const eventPlace = event.mode === 'online' ? event.location ? `Reunión online p
 	<div class="event-main">
 		<h3>{event.title}</h3>
 		{eventPlace && <p class="event-place">{event.mode === 'online' ? <span aria-hidden="true">◌</span> : <QuickIcon name="map" />} {eventPlace}</p>}
+		{showMeetingDetails && <div class="meeting-details" data-meeting-details hidden={!event.meeting}>
+			<a data-meeting-link href={event.meeting?.url ?? '#'} target="_blank" rel="noreferrer">Ingresar a la reunión <span aria-hidden="true">↗</span></a>
+			<p class="meeting-credentials" data-meeting-credentials hidden={!event.meeting?.id && !event.meeting?.passcode}><span data-meeting-id-row hidden={!event.meeting?.id}>ID de reunión: <span data-meeting-id>{event.meeting?.id}</span></span><br data-meeting-credentials-separator hidden={!event.meeting?.id || !event.meeting?.passcode} /><span data-meeting-passcode-row hidden={!event.meeting?.passcode}>Código de acceso: <span data-meeting-passcode>{event.meeting?.passcode}</span></span></p>
+		</div>}
 		{variant === 'full' && event.mode === 'presencial' && <p class="address">Aristóbulo del Valle 2580, Merlo</p>}
 		{variant === 'full' && event.description && <p class="event-description">{event.description}</p>}
 	</div>
@@ -21,6 +25,7 @@ const eventPlace = event.mode === 'online' ? event.location ? `Reunión online p
 	.event-date { color: var(--coral-dark); font-size: .72rem; font-weight: 800; letter-spacing: .09em; margin-bottom: .9rem; }
 	h3 { font-family: var(--font-display); font-size: 1.25rem; letter-spacing: -.035em; line-height: 1.1; margin: 0; }
 	.event-place, .address, .event-description { color: var(--ink-muted); font-size: .88rem; margin: .8rem 0 0; }
+	.meeting-details { border-top: 1px solid var(--line); margin-top: .9rem; padding-top: .85rem; }.meeting-details a { align-items: center; background: transparent; border: 1.5px solid var(--coral-dark); border-radius: 999px; color: var(--coral-dark); display: inline-flex; font-size: .82rem; font-weight: 800; gap: .38rem; padding: .58rem .9rem; text-decoration: none; transition: background-color .2s ease, color .2s ease, transform .2s ease; }.meeting-details a:hover, .meeting-details a:focus-visible { background: var(--coral-dark); color: var(--cream); transform: translateY(-1px); }.meeting-details p { color: var(--ink-muted); font-size: .76rem; line-height: 1.55; margin: .65rem 0 0; }
 	.event-place span { color: var(--coral-dark); font-size: 1.15rem; }.event-place :global(svg) { color: var(--coral-dark); height: 1rem; margin-right: .2rem; vertical-align: -.18rem; width: 1rem; }
 	.address { margin-top: .25rem; }.event-description { line-height: 1.55; }
 	.full { display: grid; gap: 1.5rem; grid-template-columns: 10.5rem 1fr; padding: 1.6rem; }

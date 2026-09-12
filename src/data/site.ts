@@ -6,6 +6,7 @@ export type Event = {
 	mode?: 'presencial' | 'online';
 	location?: string;
 	description?: string;
+	meeting?: { url: string; id?: string; passcode?: string };
 };
 
 export const site = {
@@ -29,6 +30,14 @@ const sundays = ['2026-08-16', '2026-08-23', '2026-08-30', '2026-09-06', '2026-0
 const thursdays = ['2026-08-20', '2026-08-27', '2026-09-03', '2026-09-10', '2026-09-17', '2026-09-24', '2026-10-01', '2026-10-08', '2026-10-15', '2026-10-22', '2026-10-29', '2026-11-05', '2026-11-12', '2026-11-19', '2026-11-26', '2026-12-03', '2026-12-10', '2026-12-17', '2026-12-24', '2026-12-31'];
 const presencialPrayerDays = new Set(['2026-09-03', '2026-10-01', '2026-11-05', '2026-12-03']);
 const zoomPrayerDays = new Set(['2026-08-20', '2026-09-17', '2026-10-15', '2026-11-19', '2026-12-17']);
+const menPrayerZoom = {
+	url: 'https://us04web.zoom.us/j/79569074544?pwd=bL7ajEOlgxr72LJc8OOJxXJlDqiEic.1',
+	id: '795 6907 4544',
+	passcode: '2580',
+};
+const prayerGoogleMeet = {
+	url: 'https://meet.google.com/ctc-izeg-jyw',
+};
 
 const sundayEvents: Event[] = sundays.flatMap((day) => [
 	{ title: 'Santa Cena', start: `${day}T09:00:00-03:00`, end: `${day}T10:00:00-03:00`, category: 'Comunidad', mode: 'presencial', location: iceParqueLocation },
@@ -41,9 +50,10 @@ const prayerEvents: Event[] = thursdays.map((day) => {
 	const zoom = zoomPrayerDays.has(day);
 	const platform = zoom ? 'Zoom' : 'Google Meet';
 	return {
-		title: presencial ? 'Reunión de Oración y Enseñanza — Presencial' : zoom ? 'Reunión de Oración' : 'Reunión de Oración y Enseñanza',
+		title: presencial ? 'Reunión de Oración y Enseñanza — Presencial' : zoom ? 'Reunión de oración - Hombres' : 'Reunión de Oración y Enseñanza',
 		start: `${day}T20:00:00-03:00`, end: `${day}T21:00:00-03:00`, category: 'Oración', mode: presencial ? 'presencial' : 'online', location: presencial ? iceParqueLocation : platform,
-		description: presencial ? 'Primer jueves del mes, presencial en la iglesia.' : `Reunión por ${platform}. Pedí el link en los grupos de WhatsApp de la iglesia.`,
+		description: presencial ? 'Primer jueves del mes, presencial en la iglesia.' : zoom ? 'Únase a la reunión de Zoom.' : `Reunión por ${platform}. Pedí el link en los grupos de WhatsApp de la iglesia.`,
+		meeting: zoom ? menPrayerZoom : !presencial ? prayerGoogleMeet : undefined,
 	};
 });
 
@@ -67,17 +77,13 @@ const activadosTejaditoEvents: Event[] = ['2026-09-05', '2026-10-03', '2026-11-0
 const activadosIceEvents: Event[] = ['2026-09-19', '2026-10-17', '2026-11-21', '2026-12-19'].map((day) => ({
 	title: 'Activados x Jesús', start: `${day}T18:00:00-03:00`, end: `${day}T20:00:00-03:00`, category: 'Especial', mode: 'presencial', location: iceParqueLocation,
 }));
-const additionalPrayerEvents: Event[] = [
-	{ title: 'Reunión de Oración y Enseñanza', start: '2026-11-26T20:00:00-03:00', end: '2026-11-26T21:00:00-03:00', category: 'Oración', mode: 'online', location: 'Zoom', description: 'Reunión por Zoom. Pedir link en los grupos de WhatsApp de la iglesia.' },
-];
-
 export const events: Event[] = [
 	{ title: 'Reunión de Mujeres — Todo tiene su tiempo', start: '2026-09-12T15:30:00-03:00', end: '2026-09-12T18:00:00-03:00', category: 'Especial', mode: 'presencial', location: 'Aristóbulo del Valle 2580, Parque San Martín, Merlo, Buenos Aires', description: 'Tema: “Todo tiene su tiempo” (Eclesiastés 3) — Es tiempo de florecer. Compartiremos una merienda. Taller de manualidades con Margarita Farías.' },
 	{ title: 'Activados x Jesús', start: '2026-08-15T15:00:00-03:00', end: '2026-08-15T17:00:00-03:00', category: 'Especial', mode: 'presencial', location: 'Parque Presidente Néstor Kirchner' },
 	{ title: 'Jóvenes Fuera de Serie', start: '2026-08-22T18:00:00-03:00', end: '2026-08-22T21:00:00-03:00', category: 'Jóvenes', mode: 'presencial', location: iceParqueLocation, description: 'Nos visitan jóvenes de Morón, Húsares, Villa Celina y Villa Urquiza.' },
 	{ title: 'Taller de Evangelismo', start: '2026-08-29T09:00:00-03:00', end: '2026-08-29T12:30:00-03:00', category: 'Especial', mode: 'presencial', location: iceParqueLocation, description: 'A cargo de Martín Rebai y hermanos. Traer mate para el break.' },
 	{ title: 'Picnic Activados x Jesús', start: '2026-12-05T09:00:00-03:00', end: '2026-12-05T11:00:00-03:00', category: 'Especial', mode: 'presencial', location: 'Francisco Álvarez', description: 'Más información más adelante.' },
-	...sundayEvents, ...prayerEvents, ...outreachEvents, ...decoTelaHogarEvents, ...memoriaEvents, ...costuraEvents, ...activadosTejaditoEvents, ...activadosIceEvents, ...additionalPrayerEvents,
+	...sundayEvents, ...prayerEvents, ...outreachEvents, ...decoTelaHogarEvents, ...memoriaEvents, ...costuraEvents, ...activadosTejaditoEvents, ...activadosIceEvents,
 ].sort((first, second) => new Date(first.start).getTime() - new Date(second.start).getTime());
 
 // La agenda mensual prioriza actividades especiales; los horarios fijos se muestran aparte.

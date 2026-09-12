@@ -22,10 +22,10 @@ const links = [
 			<p class="quick-label">Ahora</p>
 			<div class="now-events-list" data-now-events-list></div>
 		</div>
-		<template data-event-card-template><EventCard event={events[0]} /></template>
+		<template data-event-card-template><EventCard event={events[0]} showMeetingDetails /></template>
 		<div class="next-event" data-next-event>
 			<p class="quick-label">Próximo encuentro</p>
-			<EventCard event={events[0]} />
+			<EventCard event={events[0]} showMeetingDetails />
 		</div>
 		<h1 id="quick-title">Todo lo que necesitás, en un lugar.</h1>
 		<nav class="quick-links" aria-label="Accesos rápidos">
@@ -58,6 +58,23 @@ const links = [
 		const onlineLabel = event.location ? `Reunión online por ${event.location}` : 'Reunión online';
 		const placeMarkup = event.mode === 'online' ? `◌ ${onlineLabel}` : event.location ? `${mapIcon} ${event.location}` : '';
 		if (place) { place.hidden = !placeMarkup; place.innerHTML = placeMarkup; }
+		const meetingDetails = eventCard.querySelector('[data-meeting-details]');
+		if (meetingDetails) {
+			const hasMeeting = Boolean(event.meeting);
+			meetingDetails.hidden = !hasMeeting;
+			if (hasMeeting) {
+				eventCard.querySelector('[data-meeting-link]').href = event.meeting.url;
+				const credentials = eventCard.querySelector('[data-meeting-credentials]');
+				credentials.hidden = !event.meeting.id && !event.meeting.passcode;
+				eventCard.querySelector('[data-meeting-id-row]').hidden = !event.meeting.id;
+				eventCard.querySelector('[data-meeting-passcode-row]').hidden = !event.meeting.passcode;
+				eventCard.querySelector('[data-meeting-credentials-separator]').hidden = !event.meeting.id || !event.meeting.passcode;
+				const meetingId = eventCard.querySelector('[data-meeting-id]');
+				const meetingPasscode = eventCard.querySelector('[data-meeting-passcode]');
+				if (meetingId) meetingId.textContent = event.meeting.id ?? '';
+				if (meetingPasscode) meetingPasscode.textContent = event.meeting.passcode ?? '';
+			}
+		}
 	};
 	const refreshEvents = () => {
 		const now = new Date();
