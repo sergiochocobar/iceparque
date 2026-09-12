@@ -72,6 +72,7 @@ const additionalPrayerEvents: Event[] = [
 ];
 
 export const events: Event[] = [
+	{ title: 'Reunión de Mujeres — Todo tiene su tiempo', start: '2026-09-12T15:30:00-03:00', end: '2026-09-12T18:00:00-03:00', category: 'Especial', mode: 'presencial', location: 'Aristóbulo del Valle 2580, Parque San Martín, Merlo, Buenos Aires', description: 'Tema: “Todo tiene su tiempo” (Eclesiastés 3) — Es tiempo de florecer. Compartiremos una merienda. Taller de manualidades con Margarita Farías.' },
 	{ title: 'Activados x Jesús', start: '2026-08-15T15:00:00-03:00', end: '2026-08-15T17:00:00-03:00', category: 'Especial', mode: 'presencial', location: 'Parque Presidente Néstor Kirchner' },
 	{ title: 'Jóvenes Fuera de Serie', start: '2026-08-22T18:00:00-03:00', end: '2026-08-22T21:00:00-03:00', category: 'Jóvenes', mode: 'presencial', location: iceParqueLocation, description: 'Nos visitan jóvenes de Morón, Húsares, Villa Celina y Villa Urquiza.' },
 	{ title: 'Taller de Evangelismo', start: '2026-08-29T09:00:00-03:00', end: '2026-08-29T12:30:00-03:00', category: 'Especial', mode: 'presencial', location: iceParqueLocation, description: 'A cargo de Martín Rebai y hermanos. Traer mate para el break.' },
