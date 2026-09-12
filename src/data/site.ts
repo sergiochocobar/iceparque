@@ -86,8 +86,8 @@ export const events: Event[] = [
 	...sundayEvents, ...prayerEvents, ...outreachEvents, ...decoTelaHogarEvents, ...memoriaEvents, ...costuraEvents, ...activadosTejaditoEvents, ...activadosIceEvents,
 ].sort((first, second) => new Date(first.start).getTime() - new Date(second.start).getTime());
 
-// La agenda mensual prioriza actividades especiales; los horarios fijos se muestran aparte.
-export const specialEvents = events.filter((event) => event.category !== 'Comunidad' && event.category !== 'Oración');
+// La agenda mensual prioriza actividades especiales; los horarios fijos y talleres se muestran aparte.
+export const specialEvents = events.filter((event) => event.category !== 'Comunidad' && event.category !== 'Oración' && !event.title.startsWith('Taller'));
 
 export const formatEventDate = (value: string, compact = false) => new Intl.DateTimeFormat('es-AR', {
 	weekday: compact ? 'short' : 'long', day: 'numeric', month: compact ? 'short' : 'long',

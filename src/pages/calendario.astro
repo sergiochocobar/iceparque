@@ -18,6 +18,13 @@ import Layout from '../layouts/Layout.astro';
 					<article><p>JUEVES</p><div class="regular-entry"><span>20:00 hs - </span><strong>Oración y Enseñanza</strong></div><small>Primer jueves presencial en ICE Parque.<br />Tercer jueves por Zoom.<br />Resto de los jueves por Google Meet.</small></article>
 				</div>
 			</section>
+			<section class="workshop-schedule" aria-labelledby="workshop-title">
+				<h2 id="workshop-title">Talleres semanales.</h2>
+				<div class="regular-list">
+					<article><p>MIÉRCOLES</p><div class="regular-entry"><span>14:00 hs - </span><strong>Taller DecoTelaHogar</strong></div><div class="regular-entry"><span>15:00 hs - </span><strong>Taller de la Memoria</strong></div></article>
+					<article><p>JUEVES</p><div class="regular-entry"><span>15:00 hs - </span><strong>Taller de Costura, Marroquinería y Reciclado</strong></div><small>Talleres libres y gratuitos en ICE Parque.</small></article>
+				</div>
+			</section>
 			<section class="special-events"><CalendarAgenda /></section>
 		</div>
 	</main>
@@ -28,5 +35,5 @@ import Layout from '../layouts/Layout.astro';
 	.calendar-content { max-width: 34rem; }
 	.calendar-header { display: grid; justify-items: center; }.back-home { align-items: center; border: 1px solid rgba(255,255,255,.58); border-radius: 999px; color: var(--cream); display: inline-flex; font-size: .72rem; font-weight: 700; gap: .35rem; letter-spacing: .01em; margin-bottom: 1.75rem; padding: .52rem .85rem; text-decoration: none; transition: background-color .2s ease, color .2s ease; }.back-home:hover, .back-home:focus-visible { background: var(--cream); color: var(--coral-dark); }
 	.calendar-page .eyebrow { color: rgba(255,255,255,.78); }.calendar-page h1 { font-size: clamp(1.75rem, 5vw, 2.25rem); letter-spacing: -.05em; margin: 0; text-align: center; }
-	.regular-schedule { margin-top: 1.6rem; text-align: center; }.special-events { margin-top: 3rem; }.regular-schedule h2 { font-family: var(--font-display); font-size: 1.3rem; letter-spacing: -.04em; line-height: 1.15; margin: 0 0 1.25rem; }.regular-list { background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.5); border-radius: 1.15rem; overflow: hidden; }.regular-list article { display: grid; gap: .75rem; padding: 1.25rem 1rem; }.regular-list article + article { border-top: 1px dashed rgba(255,255,255,.48); }.regular-list p { color: rgba(255,255,255,.78); font-size: .68rem; font-weight: 700; letter-spacing: .1em; margin: 0 0 .2rem; }.regular-entry { align-items: center; display: grid; gap: .55rem; grid-template-columns: max-content max-content; justify-content: center; text-align: left; }.regular-entry span { color: var(--coral-light); font-size: .78rem; font-weight: 700; text-align: right; white-space: nowrap; }.regular-entry strong { font-size: .88rem; white-space: nowrap; }.regular-list small { color: rgba(255,255,255,.78); font-size: .74rem; line-height: 1.55; margin-top: .2rem; }
+	.regular-schedule { margin-top: 1.6rem; text-align: center; }.workshop-schedule { margin-top: 3rem; text-align: center; }.special-events { margin-top: 3rem; }.regular-schedule h2, .workshop-schedule h2 { font-family: var(--font-display); font-size: 1.3rem; letter-spacing: -.04em; line-height: 1.15; margin: 0 0 1.25rem; }.regular-list { background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.5); border-radius: 1.15rem; overflow: hidden; }.regular-list article { display: grid; gap: .75rem; padding: 1.25rem 1rem; }.regular-list article + article { border-top: 1px dashed rgba(255,255,255,.48); }.regular-list p { color: rgba(255,255,255,.78); font-size: .68rem; font-weight: 700; letter-spacing: .1em; margin: 0 0 .2rem; }.regular-entry { align-items: center; display: grid; gap: .55rem; grid-template-columns: max-content max-content; justify-content: center; text-align: left; }.regular-entry span { color: var(--coral-light); font-size: .78rem; font-weight: 700; text-align: right; white-space: nowrap; }.regular-entry strong { font-size: .88rem; white-space: nowrap; }.regular-list small { color: rgba(255,255,255,.78); font-size: .74rem; line-height: 1.55; margin-top: .2rem; }
 </style>
